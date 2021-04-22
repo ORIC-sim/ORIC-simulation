@@ -1,0 +1,67 @@
+NET_SIZE 1000
+NODE_POWER 100000
+BLOCK_TIME 20000
+THROUGHPUT 50
+
+random.seed 1234567890
+simulation.endtime 10^9
+#simulation.logtime 10^3
+
+simulation.experiments 1
+
+network.size NET_SIZE
+network.size NET_SIZE
+network.size NET_SIZE
+network.node peersim.core.GeneralNode
+
+protocol.urt UniformRandomTransport2
+protocol.urt.mindelay 300
+protocol.urt.maxdelay 400
+
+
+#=============protocol==================
+#协议 avg 覆盖网络 link 传输层 tr
+
+protocol.link peersim.core.IdleProtocol
+
+protocol.oric oric.Oric
+protocol.oric.linkable link
+protocol.oric.transport urt
+
+#============initialization===============
+init.rndlink WireKOut
+init.rndlink.k 8
+init.rndlink.protocol link
+
+
+#===========control========================
+init.net oric.NetworkInitializer
+init.net.protocol oric
+init.net.transport urt
+
+init.net.total_mining_power NET_SIZE*NODE_POWER
+init.net.block_time BLOCK_TIME
+init.net.throughput_k THROUGHPUT
+
+control.observer oric.OricObserverAd
+control.observer.protocol oric
+control.observer.step 10^3
+
+
+ADJUST_TIME  = 10^4
+control.networkad oric.NetworkAdjust
+control.networkad.protocol oric
+control.networkad.transport urt
+control.networkad.adjust_time ADJUST_TIME
+control.networkad.assume_bandwidth 8000000 #20000000 #bps #transaction bandwidth
+control.networkad.assume_blocksize 200000 #B
+control.networkad.zeta 1 #100*0.000001 #zeta
+control.networkad.step ADJUST_TIME
+
+control.data oric.DataWriter
+control.data.protocol oric
+control.data.transport urt
+control.data.step 20000
+control.data.file_base out/data/
+
+include.control observer networkad data
