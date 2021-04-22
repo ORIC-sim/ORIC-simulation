@@ -56,7 +56,7 @@ public class NetworkAdjust implements Control {
                 assume_bandwidth = 8000000;
         }
 
-        if(block != null //区块不为空
+        if(block != null
                 && block.getHeight()==10000){
             assume_bandwidth = 16000000;
         }
